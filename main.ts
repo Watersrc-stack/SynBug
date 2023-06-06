@@ -96,14 +96,14 @@ clear_screen()
 let ncanal = 3
 Display_number(ncanal)
 while (canal_choiced == 0) {
-    if (input.buttonIsPressed(Button.A) && ncanal >= 2) {
-        ncanal += 0 - 1
+    if (input.buttonIsPressed(Button.AB)) {
+        canal_choiced = 1
+        Display_number(ncanal)
+    } else if (input.buttonIsPressed(Button.A) && ncanal >= 2) {
+        ncanal += -1
         Display_number(ncanal)
     } else if (input.buttonIsPressed(Button.B) && ncanal <= 8) {
         ncanal += 1
-        Display_number(ncanal)
-    } else if (input.buttonIsPressed(Button.AB)) {
-        canal_choiced = 1
         Display_number(ncanal)
     } else {
     	
