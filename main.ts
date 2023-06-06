@@ -82,7 +82,25 @@ function clear_screen () {
         . . . . .
         `).showImage(0)
 }
+radio.onReceivedString(function (receivedString) {
+    if (receivedString == "JOIN" && players_lst.length > 0) {
+        radio.sendValue("LENLST", players_lst.length)
+    } else if (receivedString.includes("JOINLST")) {
+        players_lst.push(receivedString.substr(7, 4))
+    } else {
+    	
+    }
+})
+radio.onReceivedValue(function (name, value) {
+    if (name == "LENLST" && value > 0) {
+        radio.sendString("JOINLST" + id_player)
+        in_list = 1
+    }
+})
+let players_lst: string[] = []
+let in_list = 0
 let canal_choiced = 0
+let id_player = ""
 music.playSoundEffect(music.createSoundEffect(WaveShape.Noise, 54, 54, 255, 0, 500, SoundExpressionEffect.None, InterpolationCurve.Linear), SoundExpressionPlayMode.InBackground)
 images.createImage(`
     . . # # #
@@ -91,6 +109,17 @@ images.createImage(`
     . . . . .
     # # # . .
     `).showImage(0)
+let id_chat_lst = [
+"a",
+"b",
+"c",
+"d",
+"e",
+"f",
+"g",
+"h"
+]
+id_player = "" + id_chat_lst._pickRandom() + id_chat_lst._pickRandom() + id_chat_lst._pickRandom() + id_chat_lst._pickRandom()
 control.waitMicros(3000000)
 clear_screen()
 let ncanal = 3
@@ -114,3 +143,19 @@ music.playSoundEffect(music.builtinSoundEffect(soundExpression.giggle), SoundExp
 images.iconImage(IconNames.Yes).showImage(0)
 control.waitMicros(2000000)
 images.iconImage(IconNames.House).showImage(0)
+in_list = 0
+players_lst = []
+while (in_list == 0) {
+    if (input.buttonIsPressed(Button.B) && !(input.buttonIsPressed(Button.A))) {
+        control.waitMicros(2000000)
+        if (input.buttonIsPressed(Button.A) && !(input.buttonIsPressed(Button.B))) {
+            music.playTone(294, music.beat(BeatFraction.Whole))
+            players_lst.push(id_player)
+            images.iconImage(IconNames.Pitchfork).showImage(0)
+            in_list = 1
+        }
+    } else {
+        radio.sendString("JOIN")
+        control.waitMicros(2000000)
+    }
+}
