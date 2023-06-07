@@ -1,75 +1,75 @@
 def Display_number(num: number):
     if num == 1:
         images.create_image("""
-            . . # . .
-                        . # # . .
-                        # . # . .
+            # # # . .
                         . . # . .
                         . . # . .
+                        . . # . .
+                        # # # # #
         """).show_image(0)
     elif num == 2:
         images.create_image("""
-            . # # # .
-                        # . . . #
-                        . . . # .
-                        . . # . .
-                        . # # # #
+            # # # # #
+                        . . . . #
+                        # # # # #
+                        # . . . .
+                        # # # # #
         """).show_image(0)
     elif num == 3:
         images.create_image("""
-            . # # . .
-                        . . . # .
-                        . . # . .
-                        . . . # .
-                        . # # . .
+            . # # # .
+                        # . . . #
+                        . . # # .
+                        # . . . #
+                        . # # # .
         """).show_image(0)
     elif num == 4:
         images.create_image("""
-            . . # . .
-                        . # . . .
-                        # . . # .
-                        . # # # #
-                        . . . # .
+            # . . . #
+                        # . . . #
+                        # # # # #
+                        . . . . #
+                        . . . . #
         """).show_image(0)
     elif num == 5:
         images.create_image("""
-            . # # # .
-                        . # . . .
-                        . . # . .
-                        . . . # .
-                        . # # . .
+            # # # # #
+                        # . . . .
+                        # # # # #
+                        . . . . #
+                        # # # # #
         """).show_image(0)
     elif num == 6:
         images.create_image("""
-            . . # # .
-                        . # . . .
-                        . . # # .
-                        . # . . #
-                        . . # # .
+            # # # # #
+                        # . . . .
+                        # # # # #
+                        # . . . #
+                        # # # # #
         """).show_image(0)
     elif num == 7:
         images.create_image("""
-            . # # # .
+            # # # # #
                         . . . # .
                         . . # . .
-                        . . # . .
                         . # . . .
+                        # . . . .
         """).show_image(0)
     elif num == 8:
         images.create_image("""
-            . . # # .
-                        . # . . #
-                        . . # # .
-                        . # . . #
-                        . . # # .
+            # # # # #
+                        # . . . #
+                        . # # # .
+                        # . . . #
+                        # # # # #
         """).show_image(0)
     elif num == 9:
         images.create_image("""
-            . . # # .
-                        . # . . #
-                        . . # # #
-                        . . . # .
-                        . . # . .
+            # # # # #
+                        # . . . #
+                        # # # # #
+                        . . . . #
+                        # # # # #
         """).show_image(0)
 def clear_screen():
     images.create_image("""
@@ -81,21 +81,26 @@ def clear_screen():
     """).show_image(0)
 
 def on_received_string(receivedString):
-    if receivedString == "JOIN":
+    if receivedString == "JOIN" and len(players_lst) > 0:
         radio.send_value("LENLST", len(players_lst))
+        music.play_tone(523, music.beat(BeatFraction.WHOLE))
     elif receivedString.includes("JOINLST"):
-        pass
+        players_lst.append(receivedString.substr(7, 4))
+        music.play_tone(698, music.beat(BeatFraction.WHOLE))
     else:
         pass
 radio.on_received_string(on_received_string)
 
 def on_received_value(name, value):
     global in_list
+    clear_screen()
     if name == "LENLST" and value > 0:
         radio.send_string("JOINLST" + id_player)
         in_list = 1
+        music.play_tone(554, music.beat(BeatFraction.WHOLE))
 radio.on_received_value(on_received_value)
 
+tmp = 0
 players_lst: List[str] = []
 in_list = 0
 canal_choiced = 0
@@ -143,13 +148,16 @@ images.icon_image(IconNames.HOUSE).show_image(0)
 in_list = 0
 players_lst = []
 while in_list == 0:
-    if input.button_is_pressed(Button.B) and not (input.button_is_pressed(Button.A)):
+    if input.button_is_pressed(Button.AB):
         control.wait_micros(2000000)
-        if input.button_is_pressed(Button.A) and not (input.button_is_pressed(Button.B)):
-            music.play_tone(294, music.beat(BeatFraction.WHOLE))
-            players_lst.append(id_player)
-            images.icon_image(IconNames.PITCHFORK).show_image(0)
-            in_list = 1
+        music.play_tone(294, music.beat(BeatFraction.WHOLE))
+        players_lst.append(id_player)
+        images.icon_image(IconNames.PITCHFORK).show_image(0)
+        in_list = 1
+        tmp = len(players_lst)
     else:
         radio.send_string("JOIN")
         control.wait_micros(2000000)
+music.play_sound_effect(music.builtin_sound_effect(soundExpression.twinkle),
+    SoundExpressionPlayMode.IN_BACKGROUND)
+images.icon_image(IconNames.DIAMOND).show_image(0)
