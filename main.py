@@ -81,30 +81,17 @@ def clear_screen():
     """).show_image(0)
 
 def on_received_string(receivedString):
-    if receivedString == "JOIN" and len(players_lst) > 0:
-        radio.send_value("LENLST", len(players_lst))
-        music.play_tone(523, music.beat(BeatFraction.WHOLE))
-    elif receivedString.includes("JOINLST"):
-        players_lst.append(receivedString.substr(7, 4))
-        music.play_tone(698, music.beat(BeatFraction.WHOLE))
-    else:
-        pass
-radio.on_received_string(on_received_string)
-
-def on_received_value(name, value):
-    global in_list
-    clear_screen()
-    if name == "LENLST" and value > 0:
-        radio.send_string("JOINLST" + id_player)
+    if receivedString.index_of("JOIN") >= 0 and len(players_lst) > 0:
+        players_lst.append(receivedString.slice(5))
+        radio.send_string("CONFIRM")
+    elif receivedString == "CONFIRM":
         in_list = 1
-        music.play_tone(554, music.beat(BeatFraction.WHOLE))
-radio.on_received_value(on_received_value)
+radio.on_received_string(on_received_string)
 
 tmp = 0
 players_lst: List[str] = []
-in_list = 0
+in_list2 = 0
 canal_choiced = 0
-id_player = ""
 music.play_sound_effect(music.create_sound_effect(WaveShape.NOISE,
         54,
         54,
@@ -145,19 +132,16 @@ music.play_sound_effect(music.builtin_sound_effect(soundExpression.giggle),
 images.icon_image(IconNames.YES).show_image(0)
 control.wait_micros(2000000)
 images.icon_image(IconNames.HOUSE).show_image(0)
-in_list = 0
-players_lst = []
-while in_list == 0:
+while in_list2 == 0:
     if input.button_is_pressed(Button.AB):
         control.wait_micros(2000000)
         music.play_tone(294, music.beat(BeatFraction.WHOLE))
         players_lst.append(id_player)
         images.icon_image(IconNames.PITCHFORK).show_image(0)
-        in_list = 1
+        in_list2 = 1
         tmp = len(players_lst)
     else:
-        radio.send_string("JOIN")
+        radio.send_string("JOIN " + id_player)
+        music.ring_tone(233)
         control.wait_micros(2000000)
-music.play_sound_effect(music.builtin_sound_effect(soundExpression.twinkle),
-    SoundExpressionPlayMode.IN_BACKGROUND)
 images.icon_image(IconNames.DIAMOND).show_image(0)

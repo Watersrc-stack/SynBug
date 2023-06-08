@@ -83,28 +83,20 @@ function clear_screen () {
         `).showImage(0)
 }
 radio.onReceivedString(function (receivedString) {
-    if (receivedString == "JOIN" && players_lst.length > 0) {
-        radio.sendValue("LENLST", players_lst.length)
-        music.playTone(523, music.beat(BeatFraction.Whole))
-    } else if (receivedString.includes("JOINLST")) {
-        players_lst.push(receivedString.substr(7, 4))
-        music.playTone(698, music.beat(BeatFraction.Whole))
-    } else {
-    	
-    }
-})
-radio.onReceivedValue(function (name, value) {
-    if (name == "LENLST") {
-        radio.sendString("JOINLST" + id_player)
-        in_list = 1
-        music.playTone(311, music.beat(BeatFraction.Whole))
+    let in_list: number;
+if (receivedString.indexOf("JOIN") >= 0 && players_lst.length > 0) {
+        music.playTone(262, music.beat(BeatFraction.Whole))
+        players_lst.push(receivedString.slice(5))
+        radio.sendString("CONFIRM")
+    } else if (receivedString == "CONFIRM") {
+        music.playTone(659, music.beat(BeatFraction.Whole))
+        in_list2 = 1
     }
 })
 let tmp = 0
 let players_lst: string[] = []
-let in_list = 0
+let in_list2 = 0
 let canal_choiced = 0
-let id_player = ""
 music.playSoundEffect(music.createSoundEffect(WaveShape.Noise, 54, 54, 255, 0, 500, SoundExpressionEffect.None, InterpolationCurve.Linear), SoundExpressionPlayMode.InBackground)
 images.createImage(`
     . . # # #
@@ -123,7 +115,7 @@ let id_chat_lst = [
 "g",
 "h"
 ]
-id_player = "" + id_chat_lst._pickRandom() + id_chat_lst._pickRandom() + id_chat_lst._pickRandom() + id_chat_lst._pickRandom()
+let id_player = "" + id_chat_lst._pickRandom() + id_chat_lst._pickRandom() + id_chat_lst._pickRandom() + id_chat_lst._pickRandom()
 control.waitMicros(3000000)
 clear_screen()
 let ncanal = 3
@@ -147,20 +139,24 @@ music.playSoundEffect(music.builtinSoundEffect(soundExpression.giggle), SoundExp
 images.iconImage(IconNames.Yes).showImage(0)
 control.waitMicros(2000000)
 images.iconImage(IconNames.House).showImage(0)
-in_list = 0
-players_lst = []
-while (in_list == 0) {
+in_list2 = 0
+while (in_list2 == 0) {
     if (input.buttonIsPressed(Button.AB)) {
         control.waitMicros(2000000)
         music.playTone(294, music.beat(BeatFraction.Whole))
         players_lst.push(id_player)
         images.iconImage(IconNames.Pitchfork).showImage(0)
-        in_list = 1
+        in_list2 = 1
         tmp = players_lst.length
+    } else if (input.buttonIsPressed(Button.A)) {
+    	
+    } else if (input.buttonIsPressed(Button.B)) {
+    	
     } else {
-        radio.sendString("JOIN")
-        music.ringTone(233)
-        control.waitMicros(2000000)
+    	
     }
+    radio.sendString("JOIN " + id_player)
+    control.waitMicros(2000000)
 }
+music.playSoundEffect(music.createSoundEffect(WaveShape.Noise, 500, 499, 255, 0, 750, SoundExpressionEffect.None, InterpolationCurve.Linear), SoundExpressionPlayMode.UntilDone)
 images.iconImage(IconNames.Diamond).showImage(0)
